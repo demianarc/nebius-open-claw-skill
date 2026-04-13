@@ -10,7 +10,7 @@ Install OpenClaw, wire it to Nebius Token Factory, and verify a working model qu
 ## Quick Start
 
 1. Confirm `NEBIUS_API_KEY` is available. If it is missing, have the user create a Token Factory API key and export it first. Never commit the key.
-2. Detect `openclaw` with `which openclaw`. If it is missing, install it with `npm install -g @openclaw/cli`.
+2. Detect `openclaw` with `which openclaw`. If it is missing, install it with `npm install -g openclaw@latest`.
 3. Use `python3 scripts/setup_openclaw_nebius.py --apply` to discover Nebius models and configure OpenClaw. Add `--primary-model` and repeated `--model MODEL_ID:alias` flags when the user wants specific models.
 4. Restart the gateway only if the helper reports changed config or if the models are still missing: `openclaw gateway restart`.
 5. Verify with `openclaw models list`, `openclaw models status`, and `openclaw dashboard`.
@@ -28,6 +28,7 @@ Install OpenClaw, wire it to Nebius Token Factory, and verify a working model qu
 - Require `python3`, `npm`, and a Nebius API key in `NEBIUS_API_KEY`.
 - Accept `NEBIUS_TOKEN_FACTORY_API_KEY` only as a compatibility fallback. Normalize back to `NEBIUS_API_KEY` when possible.
 - Keep secrets in env vars or env substitution strings such as `${NEBIUS_API_KEY}`. Do not write raw keys into repo files.
+- If global npm install fails on permissions, prefer a user-local install such as `npm install -g --prefix ~/.openclaw openclaw@latest` and use `~/.openclaw/bin/openclaw`.
 
 ### 3. Discover or pick models
 

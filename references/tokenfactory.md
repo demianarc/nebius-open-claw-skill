@@ -21,11 +21,18 @@ This regional fallback is an inference from the docs rather than a single explic
 ## Default setup sequence
 
 1. Export `NEBIUS_API_KEY`.
-2. Install OpenClaw if `openclaw` is missing.
+2. Install OpenClaw if `openclaw` is missing with `npm install -g openclaw@latest`.
 3. Run `python3 scripts/setup_openclaw_nebius.py --list-models` when model ids are unknown.
 4. Run `python3 scripts/setup_openclaw_nebius.py --apply` to set the provider, model catalog, primary model, and allowlist.
 5. Restart the gateway only when needed.
 6. Verify with `openclaw models list`, `openclaw models status`, and `openclaw dashboard`.
+
+If global npm install fails on permissions, use a local prefix install:
+
+```bash
+npm install -g --prefix ~/.openclaw openclaw@latest
+~/.openclaw/bin/openclaw --version
+```
 
 ## Workshop defaults
 

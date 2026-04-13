@@ -20,7 +20,7 @@ It is optimized for the simplest path first:
 ## Intended workflow
 
 1. Export `NEBIUS_API_KEY`
-2. Install OpenClaw if needed: `npm install -g @openclaw/cli`
+2. Install OpenClaw if needed: `npm install -g openclaw@latest`
 3. List Nebius models: `python3 scripts/setup_openclaw_nebius.py --list-models`
 4. Apply config: `python3 scripts/setup_openclaw_nebius.py --apply`
 5. Verify: `openclaw models list`, `openclaw models status`, `openclaw dashboard`
@@ -44,3 +44,4 @@ $openclaw-nebius
 - Token Factory is the default path because it is the fastest setup.
 - Serverless is kept as a separate branch for users who want hosted OpenClaw, not just hosted inference.
 - API keys should stay in environment variables, not committed config files.
+- If global npm install hits permissions, use a local prefix install such as `npm install -g --prefix ~/.openclaw openclaw@latest`.

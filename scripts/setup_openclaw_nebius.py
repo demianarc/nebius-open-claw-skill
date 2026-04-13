@@ -318,62 +318,30 @@ def current_json_value(path: str, default: object) -> object:
         return default
 
 
-def build_commands(
+def build_batch_operations(
     provider_id: str,
-    base_url: str,
-    env_var: str,
-    provider_models: list[dict],
+    provider_config: dict,
     allowlist: dict,
     primary_model_id: str,
-) -> list[list[str]]:
+) -> list[dict]:
     primary_ref = f"{provider_id}/{primary_model_id}"
-    env_ref = "${" + env_var + "}"
     return [
-        ["openclaw", "config", "set", "models.mode", "merge"],
+        {"path": "models.mode", "value": "merge"},
+        {"path": f"models.providers.{provider_id}", "value": provider_config},
+        {"path": "agents.defaults.model.primary", "value": primary_ref},
+        {"path": "agents.defaults.models", "value": allowlist},
+    ]
+
+
+def build_commands(batch_operations: list[dict]) -> list[list[str]]:
+    return [
         [
             "openclaw",
             "config",
             "set",
-            f"models.providers.{provider_id}.baseUrl",
-            base_url,
-        ],
-        [
-            "openclaw",
-            "config",
-            "set",
-            f"models.providers.{provider_id}.apiKey",
-            env_ref,
-        ],
-        [
-            "openclaw",
-            "config",
-            "set",
-            f"models.providers.{provider_id}.api",
-            "openai-completions",
-        ],
-        [
-            "openclaw",
-            "config",
-            "set",
-            f"models.providers.{provider_id}.models",
-            json.dumps(provider_models, separators=(",", ":")),
-            "--strict-json",
-        ],
-        [
-            "openclaw",
-            "config",
-            "set",
-            "agents.defaults.model.primary",
-            primary_ref,
-        ],
-        [
-            "openclaw",
-            "config",
-            "set",
-            "agents.defaults.models",
-            json.dumps(allowlist, separators=(",", ":")),
-            "--strict-json",
-        ],
+            "--batch-json",
+            json.dumps(batch_operations, separators=(",", ":")),
+        ]
     ]
 
 
@@ -438,8 +406,13 @@ def main() -> None:
         )
         selected = unique_models(selected)
 
+    existing_provider_config = current_json_value(
+        f"models.providers.{args.provider_id}", {}
+    )
     provider_models = merge_provider_models(
-        current_json_value(f"models.providers.{args.provider_id}.models", []),
+        (existing_provider_config or {}).get("models", [])
+        if isinstance(existing_provider_config, dict)
+        else [],
         selected,
     )
     allowlist = merge_allowlist(
@@ -447,15 +420,25 @@ def main() -> None:
         args.provider_id,
         selected,
     )
-
-    commands = build_commands(
+    provider_config = (
+        dict(existing_provider_config) if isinstance(existing_provider_config, dict) else {}
+    )
+    provider_config.update(
+        {
+            "baseUrl": base_url,
+            "apiKey": "${" + env_var + "}",
+            "api": "openai-completions",
+            "models": provider_models,
+        }
+    )
+    batch_operations = build_batch_operations(
         provider_id=args.provider_id,
-        base_url=base_url,
-        env_var=env_var,
-        provider_models=provider_models,
+        provider_config=provider_config,
         allowlist=allowlist,
         primary_model_id=primary_model_id,
     )
+
+    commands = build_commands(batch_operations)
 
     print("Selected Nebius models:")
     for item in selected:
