@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenClaw on Nebius"
+  short_description: "Wire OpenClaw to Nebius models fast"
+  default_prompt: "Use $openclaw-nebius to install OpenClaw, connect it to Nebius Token Factory, and verify the chosen model works."
