@@ -359,7 +359,7 @@ def print_model_table(models: list[dict]) -> None:
 def run_commands(commands: list[list[str]], restart: bool) -> None:
     if shutil.which("openclaw") is None:
         raise SystemExit(
-            "openclaw is not installed. Install it first with `npm install -g @openclaw/cli`."
+            "openclaw is not installed. Install it first with `npm install -g openclaw@latest`."
         )
 
     for command in commands:
